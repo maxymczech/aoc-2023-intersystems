@@ -12,7 +12,7 @@
         "service": "iris",
         "internalPort": 52773
       },
-      "active": true
+      "active": false
     },
     "sqltools.connections": [
       {
@@ -28,6 +28,7 @@
         "username": "_SYSTEM",
         "password": "SYS"
       }
-    ]
+    ],
+    "workbench.colorTheme": "InterSystems Default Dark Modern"
 
 }
