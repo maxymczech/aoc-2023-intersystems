@@ -12,107 +12,136 @@ ClassMethod Run()
     write part2,!
 }
 
+ClassMethod isd(d As %String) As %Integer
+{
+	if (d = "0") || (d = "1") || (d = "2") || (d = "3") || (d = "4") || (d = "5") || (d = "6") || (d = "7") || (d = "8") || (d = "9") {
+		return 1
+	}
+	return 0
+}
+
 ClassMethod Part1(verbose = 0) As %Integer
 {
     set stream=..GetInput(..#InputFile)
-    set sum=0
-    set digits = "123456789"
+    set result = 0
+    kill lines
+    set h = 0
 	while 'stream.AtEnd {
 		set line = $zstrip(stream.ReadLine(), "*C")
-		set cal = 0
-		// write line,!
-		for i=1:1:$LENGTH(line) {
-			set c = $extract(line, i, i)
-			for j=1:1:$LENGTH(digits) {
-				set d = $extract(digits, j, j)
-				if c = d {
-					set cal = cal + j * 10
-					GOTO Last1
-				}
-			}
-		}
-Last1
-		for i=$LENGTH(line):-1:1 {
-			set c = $extract(line, i, i)
-			for j=1:1:$LENGTH(digits) {
-				set d = $extract(digits, j, j)
-				if c = d {
-					set cal = cal + j
-					GOTO Sum1
-				}
-			}
-		}
-Sum1
-		set sum = sum + cal
+		set h = h + 1
+		set lines(h) = line
     }
-    return sum
+    set w = $length(lines(1))
+    
+    for i = 1:1:h {
+	    for j = 1:1:w {
+		    set c = $extract(lines(i),j)
+		    if ..isd(c) {
+			    set l = 1
+			    for t = j+1:1:w {
+				    set c2 = $extract(lines(i),t)
+				    if ..isd(c2) {
+					    set l = l + 1
+				    } else {
+					    QUIT
+				    }
+			    }
+			    
+			    set n = $extract(lines(i),j,j+l-1)
+			    set isPartNumber = 0
+			    for u = i-1:1:i+1 {
+				    for v = j-1:1:j+l {
+					    if (u > 0) && (u <= h) && (v > 0) && (v <= w) {
+						    set c3 = $extract(lines(u),v)
+						    if (..isd(c3) = 0) && (c3 '= ".") {
+							    set isPartNumber = 1
+						    }
+					    }
+				    }
+			    }
+			    
+			    // write n, " ", isPartNumber, !
+				if isPartNumber {
+					set result = result + n
+				}
+			    
+			    set j = j + l
+		    }
+	    }
+    }
+    return result
 }
 
 ClassMethod Part2(verbose = 0) As %Integer
 {
     set stream=..GetInput(..#InputFile)
-    set sum=0
-    set digits = "123456789"
-    set numbers(1) = "one"
-    set numbers(2) = "two"
-    set numbers(3) = "three"
-    set numbers(4) = "four"
-    set numbers(5) = "five"
-    set numbers(6) = "six"
-    set numbers(7) = "seven"
-    set numbers(8) = "eight"
-    set numbers(9) = "nine"
-    set numbersRev(1) = "eno"
-    set numbersRev(2) = "owt"
-    set numbersRev(3) = "eerht"
-    set numbersRev(4) = "ruof"
-    set numbersRev(5) = "evif"
-    set numbersRev(6) = "xis"
-    set numbersRev(7) = "neves"
-    set numbersRev(8) = "thgie"
-    set numbersRev(9) = "enin"
+    set result = 0
+    kill lines
+    kill adjacency
+    kill adjCount
+    set h = 0
 	while 'stream.AtEnd {
 		set line = $zstrip(stream.ReadLine(), "*C")
-		set lineRev = $REVERSE(line)
-		set cal = 0
-		
-		set leftDigit = 0
-		set leftPos = 9999
-		for i=1:1:9 {
-			set d = $extract(digits, i, i)
-			set x = $FIND(line, d) - 1
-			if (x > 0) && (x < leftPos) {
-				set leftPos = x
-				set leftDigit = i
-			}
-			set y = $FIND(line, numbers(i)) - $LENGTH(numbers(i))
-			if (y > 0) && (y < leftPos) {
-				set leftPos = y
-				set leftDigit = i
-			}
-		}
-		set cal = cal + leftDigit * 10
+		set h = h + 1
+		set lines(h) = line
+    }
+    set w = $length(lines(1))
+    
+    for i = 1:1:h {
+	    for j = 1:1:w {
+		    set key = i _ ";" _ j
+		    set adjCount(key) = 0
+	    }
+    }
+    
+    for i = 1:1:h {
+	    for j = 1:1:w {
+		    set c = $extract(lines(i),j)
+		    if ..isd(c) {
+			    set l = 1
+			    for t = j+1:1:w {
+				    set c2 = $extract(lines(i),t)
+				    if ..isd(c2) {
+					    set l = l + 1
+				    } else {
+					    QUIT
+				    }
+			    }
+			    
+			    set n = $extract(lines(i),j,j+l-1)
+			    set isPartNumber = 0
+			    for u = i-1:1:i+1 {
+				    for v = j-1:1:j+l {
+					    if (u > 0) && (u <= h) && (v > 0) && (v <= w) {
+						    set c3 = $extract(lines(u),v)
+						    if (..isd(c3) = 0) && (c3 = "*") {
+							    set key = u _ ";" _ v
+							    if adjCount(key) = 0 {
+								    set adjacency(key) = n
+							    } else {
+								    set adjacency(key) = adjacency(key) * n
+							    }
+							    set adjCount(key) = adjCount(key) + 1
+						    }
+					    }
+				    }
+			    }
 
-		set rightDigit = 0
-		set rightPos = 9999
-		for i=1:1:9 {
-			set d = $extract(digits, i, i)
-			set x = $FIND(lineRev, d) - 1
-			if (x > 0) && (x < rightPos) {
-				set rightPos = x
-				set rightDigit = i
-			}
-			set y = $FIND(lineRev, numbersRev(i)) - $LENGTH(numbersRev(i))
-			if (y > 0) && (y < rightPos) {
-				set rightPos = y
-				set rightDigit = i
-			}
-		}
-		set cal = cal + rightDigit
-		
-		set sum = sum + cal
-	}
-    return sum
+			    set j = j + l
+		    }
+	    }
+    }
+    
+    for i = 1:1:h {
+	    for j = 1:1:w {
+		    set key = i _ ";" _ j
+		    if adjCount(key) = 2 {
+			    set result = result + adjacency(key)
+		    }
+	    }
+    }
+
+    return result
 }
 
 }
