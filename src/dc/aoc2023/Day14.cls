@@ -179,9 +179,11 @@ ClassMethod Part2(verbose = 0) As %Integer
 							set twos = twos + 1
 						}
 					}
-					while (c + twos) < 1000000000 {
-						set c = c + twos
-					}
+					// while (c + twos) < 1000000000 {
+					//	set c = c + twos
+					// }
+					set x = (1000000000 - c) # twos
+					set c = 1000000000 - x
 				}
 			}
 
