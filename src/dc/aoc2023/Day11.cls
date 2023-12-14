@@ -56,7 +56,7 @@ ClassMethod Compute(growFactor) As %Integer
 		    set cols(colCount) = x
 	    }
     }
-    
+
     set galaxyCount = 0
     for y = 1:1:height {
 	    for x = 1:1:width {
@@ -67,7 +67,7 @@ ClassMethod Compute(growFactor) As %Integer
 		    }
 	    }
     }
-    
+
     for i = 2:1:galaxyCount {
 	    for j = 1:1:(i - 1) {
 		    set miny = galaxies(i, 1)
@@ -97,7 +97,7 @@ ClassMethod Compute(growFactor) As %Integer
 				    }
 			    }
 			    if isEmpty {
-				    set d = d + 1
+				    set d = d + growFactor
 			    }
 		    }
 		    for x = minx:1:maxx {
