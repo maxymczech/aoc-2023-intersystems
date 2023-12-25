@@ -1,7 +1,7 @@
 Class dc.aoc2023.Day25 Extends dc.aoc2023.Base
 {
 
-Parameter InputFile = "input25.txt";
+Parameter InputFile = "input25.set2.txt";
 
 ClassMethod Run()
 {
@@ -13,6 +13,7 @@ ClassMethod Run()
 ClassMethod bfs(ByRef res, s, t, ByRef parent, ByRef visited, nodeCount) As %Integer
 {
 	for i = 1:1:nodeCount {
+		set parent(i) = 0
 		set visited(i) = 0
 	}
 	set visited(s) = 1
@@ -76,18 +77,6 @@ ClassMethod Part1(verbose = 0) As %Integer
 			}
 		}
     }
-    for i = 1:1:nodeCount {
-	    set del(i) = 0
-	    for j = 1:1:nodeCount {
-		    if $get(conn(i, j), 0) {
-			    set W(i, j) = 1
-			    set res(i, j) = 1
-		    } else {
-			    set W(i, j) = 0
-			    set res(i, j) = 0
-		    }
-	    }
-    }
 
     set s = 1
     while 1 {
@@ -95,6 +84,19 @@ ClassMethod Part1(verbose = 0) As %Integer
 	    // Assume two subgraphs after cut are approx. same size
 	    // Then probability to place source and target correctly is P = 0.5
     	set t = $random(nodeCount - 2) + 2
+    	
+    	for i = 1:1:nodeCount {
+	    	set del(i) = 0
+		    for j = 1:1:nodeCount {
+			    if $get(conn(i, j), 0) {
+				    set W(i, j) = 1
+				    set res(i, j) = 1
+			    } else {
+				    set W(i, j) = 0
+				    set res(i, j) = 0
+			    }
+		    }
+	    }
 
 	    while ..bfs(.res, s, t, .parent, .visited, nodeCount) {
 		    set pFlow = 999999999
